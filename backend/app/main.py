@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.config import settings
-from app.database import engine
+from app.routers.todos import router as todos_router
 
 app = FastAPI(title="Todo App API")
 
@@ -13,6 +12,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(todos_router)
 
 
 @app.get("/api/health")
