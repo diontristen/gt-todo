@@ -16,7 +16,7 @@ depends_on = None
 
 
 def upgrade():
-    op.execute("CREATE TYPE todo_status AS ENUM ('backlog', 'todo', 'in_progress', 'done')")
+    op.execute("DO $$ BEGIN CREATE TYPE todo_status AS ENUM ('backlog', 'todo', 'in_progress', 'done'); EXCEPTION WHEN duplicate_object THEN NULL; END $$")
     op.create_table(
         "todos",
         sa.Column("id", UUID(as_uuid=True), primary_key=True, server_default=sa.text("gen_random_uuid()")),
