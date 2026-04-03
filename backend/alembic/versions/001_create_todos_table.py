@@ -22,11 +22,12 @@ def upgrade():
         sa.Column("id", UUID(as_uuid=True), primary_key=True, server_default=sa.text("gen_random_uuid()")),
         sa.Column("title", sa.String(255), nullable=False),
         sa.Column("description", sa.Text(), nullable=True),
-        sa.Column("status", sa.Enum("backlog", "todo", "in_progress", "done", name="todo_status", create_type=False), nullable=False, server_default="todo"),
+        sa.Column("status", sa.Text(), nullable=False, server_default="todo"),
         sa.Column("position", sa.Integer(), nullable=False, server_default="0"),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
     )
+    op.execute("ALTER TABLE todos ALTER COLUMN status TYPE todo_status USING status::todo_status")
 
 
 def downgrade():
