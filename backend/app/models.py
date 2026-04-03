@@ -27,7 +27,7 @@ class Todo(Base):
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     status: Mapped[TodoStatus] = mapped_column(
-        Enum(TodoStatus, name="todo_status"), default=TodoStatus.todo, nullable=False
+        Enum(TodoStatus, name="todo_status", create_type=False), default=TodoStatus.todo, nullable=False
     )
     position: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
