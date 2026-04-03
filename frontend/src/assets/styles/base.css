@@ -1,0 +1,29 @@
+/* ============================================
+   Base Reset & Global Styles
+   ============================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--surface-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes ds-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ds-shimmer {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
