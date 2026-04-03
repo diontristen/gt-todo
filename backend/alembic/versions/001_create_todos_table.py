@@ -6,8 +6,6 @@ Create Date: 2026-04-02
 """
 
 from alembic import op
-import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import UUID
 
 revision = "001"
 down_revision = None
@@ -16,20 +14,24 @@ depends_on = None
 
 
 def upgrade():
-    op.execute("DO $$ BEGIN CREATE TYPE todo_status AS ENUM ('backlog', 'todo', 'in_progress', 'done'); EXCEPTION WHEN duplicate_object THEN NULL; END $$")
-    op.create_table(
-        "todos",
-        sa.Column("id", UUID(as_uuid=True), primary_key=True, server_default=sa.text("gen_random_uuid()")),
-        sa.Column("title", sa.String(255), nullable=False),
-        sa.Column("description", sa.Text(), nullable=True),
-        sa.Column("status", sa.Text(), nullable=False, server_default="todo"),
-        sa.Column("position", sa.Integer(), nullable=False, server_default="0"),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
-        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
-    )
-    op.execute("ALTER TABLE todos ALTER COLUMN status TYPE todo_status USING status::todo_status")
+    op.execute("""
+        DO $$ BEGIN
+            CREATE TYPE todo_status AS ENUM ('backlog', 'todo', 'in_progress', 'done');
+        EXCEPTION WHEN duplicate_object THEN NULL;
+        END $$;
+
+        CREATE TABLE IF NOT EXISTS todos (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            title VARCHAR(255) NOT NULL,
+            description TEXT,
+            status todo_status NOT NULL DEFAULT 'todo',
+            position INTEGER NOT NULL DEFAULT 0,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+            updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+        );
+    """)
 
 
 def downgrade():
-    op.drop_table("todos")
-    op.execute("DROP TYPE todo_status")
+    op.execute("DROP TABLE IF EXISTS todos")
+    op.execute("DROP TYPE IF EXISTS todo_status")
